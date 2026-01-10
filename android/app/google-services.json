@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "665130055650",
+    "project_id": "grocdrop",
+    "storage_bucket": "grocdrop.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665130055650:android:c164407ed89b1b4f82abbb",
+        "android_client_info": {
+          "package_name": "com.grocdrop.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665130055650-hn7v3pu8eb0ltej5rd4ukqs3e7782e8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grocdrop.app",
+            "certificate_hash": "0d53a65fe9e94e6d9076217cd45039056b60884c"
+          }
+        },
+        {
+          "client_id": "665130055650-h5e6qr5lhihebeqqtqgkbu787o7m8fq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUcTaYQzkQJs2ISQtSzPj4YzZiKe7NsJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665130055650-h5e6qr5lhihebeqqtqgkbu787o7m8fq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
