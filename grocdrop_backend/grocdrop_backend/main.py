@@ -41,10 +41,10 @@ MONGO_URI = os.getenv("MONGO_URI")
 
 client = MongoClient(MONGO_URI)
 
-# ✅ FIXED: use correct DB name directly
-db = client["surajyadu9_db_user"]
+# ✅ FIX: correct DATABASE name (NOT user)
+db = client["grocdrop_db"]
 
-# ✅ SAFE INDEX CREATION (NO CRASH)
+# ✅ SAFE INDEX CREATION
 try:
     db.carts.create_index("user_id", unique=True)
     db.orders.create_index("user_id")
