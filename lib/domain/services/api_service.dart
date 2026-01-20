@@ -6,10 +6,10 @@ class ApiService {
   // 🔁 CHANGE THIS FLAG ONLY
   static const bool isProd = true;
 
-  // 🌐 BASE URL
+  // 🌐 BASE URL (UPDATED – WORKING RENDER URL)
   static const String baseUrl = isProd
       // ✅ PERMANENT CLOUD (RENDER)
-      ? "https://grocdro-api.onrender.com"
+      ? "https://one2mrsky-grocdro-p-flutter-application-x6qh.onrender.com"
       // 🧪 LOCAL TESTING (PC ON)
       : "http://192.168.201.46:8000";
 

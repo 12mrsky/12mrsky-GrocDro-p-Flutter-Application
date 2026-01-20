@@ -8,6 +8,11 @@ from typing import List
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+from fastapi import FastAPI
+from grocdrop_backend.routes.admin_products import router as admin_router
+
+app = FastAPI()
+app.include_router(admin_router)
 
 # ---------------- ENV ----------------
 load_dotenv()

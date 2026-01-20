@@ -1,0 +1,7 @@
+{
+  "python.analysis.extraPaths": [
+    "./grocdrop_backend"
+  ],
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.useLibraryCodeForTypes": true
+}

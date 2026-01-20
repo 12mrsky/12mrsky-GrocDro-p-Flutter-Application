@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../../domain/providers/cart_provider.dart';
+import '../../domain/providers/cart_provider.dart';
 import 'product_details_screen.dart';
 
 class ProductCard extends StatelessWidget {
@@ -50,12 +50,11 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// IMAGE (FIXED HEIGHT)
             SizedBox(
               height: 95,
               child: Center(
                 child: Image.network(
-                  product['image'],
+  product['image'].toString(),
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) =>
                       const Icon(Icons.image_not_supported,
@@ -65,8 +64,6 @@ class ProductCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 8),
-
-            /// NAME (FIXED LINES)
             Text(
               product['name'],
               maxLines: 2,
@@ -77,9 +74,8 @@ class ProductCard extends StatelessWidget {
               ),
             ),
 
-            /// DESC (OPTIONAL, FIXED)
             Text(
-              product['desc'] ?? 'Fresh & Quality Product',
+              product['description'] ?? 'Fresh & Quality Product',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -90,7 +86,6 @@ class ProductCard extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            /// PRICE + CART (FIXED HEIGHT ROW)
             SizedBox(
               height: 36,
               child: Row(
@@ -107,7 +102,6 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   qty == 0
                       ? _addButton(cart, productId)
                       : _qtyController(cart, productId, qty),

@@ -1,7 +1,9 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class Product(BaseModel):
     name: str
     price: float
-    image: str
     category: str
+    image: str
+    description: Optional[str] = ""
