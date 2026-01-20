@@ -3,8 +3,15 @@ import 'package:http/http.dart' as http;
 import '../providers/cart_provider.dart';
 
 class ApiService {
-static const String baseUrl =
-    "http://192.168.201.46:8000";
+  // 🔁 CHANGE THIS FLAG ONLY
+  static const bool isProd = true;
+
+  // 🌐 BASE URL
+  static const String baseUrl = isProd
+      // ✅ PERMANENT CLOUD (RENDER)
+      ? "https://grocdro-api.onrender.com"
+      // 🧪 LOCAL TESTING (PC ON)
+      : "http://192.168.201.46:8000";
 
   // ================= PRODUCTS =================
   static Future<List<Map<String, dynamic>>> fetchProducts() async {
@@ -177,7 +184,7 @@ static const String baseUrl =
       final response =
           await http.get(Uri.parse("$baseUrl/invoice/$orderId"));
       if (response.statusCode == 200) {
-        return response.body; // PDF base64 or URL
+        return response.body;
       }
     } catch (e) {
       print("DOWNLOAD INVOICE ERROR: $e");

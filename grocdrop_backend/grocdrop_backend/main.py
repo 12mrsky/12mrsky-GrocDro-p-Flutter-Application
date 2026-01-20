@@ -10,15 +10,10 @@ from pathlib import Path
 import os
 
 # ---------------- ENV ----------------
-
 load_dotenv()
 
 # ---------------- APP ----------------
-
 app = FastAPI(title="GrocDrop API")
-from fastapi.staticfiles import StaticFiles
-
-app.mount("/images", StaticFiles(directory="images"), name="images")
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,13 +24,9 @@ app.add_middleware(
 )
 
 # ---------------- BASE DIR ----------------
-# Points to: grocdrop_backend/grocdrop_backend/
-
 BASE_DIR = Path(__file__).resolve().parent
 
 # ---------------- STATIC IMAGES ----------------
-# Folder: grocdrop_backend/grocdrop_backend/images/
-
 IMAGES_DIR = BASE_DIR / "images"
 IMAGES_DIR.mkdir(exist_ok=True)
 
@@ -46,50 +37,40 @@ app.mount(
 )
 
 # ---------------- DATABASE ----------------
+MONGO_URI = os.getenv("MONGO_URI")
 
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client[os.getenv("DB_NAME")]
+client = MongoClient(MONGO_URI)
 
-db.carts.create_index("user_id", unique=True)
-db.orders.create_index("user_id")
+# ✅ FIXED: use correct DB name directly
+db = client["surajyadu9_db_user"]
+
+# ✅ SAFE INDEX CREATION (NO CRASH)
+try:
+    db.carts.create_index("user_id", unique=True)
+    db.orders.create_index("user_id")
+except Exception as e:
+    print("Index creation skipped:", e)
 
 # ---------------- ROOT ----------------
-
 @app.get("/")
 def root():
     return {"message": "GrocDrop backend running 🚀"}
 
 # ---------------- PRODUCTS ----------------
-
 @app.get("/products")
 def get_products(request: Request):
-    """
-    MongoDB stores:
-      image: "apple.png"
-
-    API returns:
-      image: "http://IP:PORT/images/apple.png"
-
-    IMPORTANT:
-    - DO NOT remove _id
-    - Convert _id (ObjectId) to string
-    """
-    products = list(db.products.find())  # KEEP _id
+    products = list(db.products.find())
 
     base_url = str(request.base_url).rstrip("/")
 
     for product in products:
-        # convert ObjectId -> string (CRITICAL)
         product["_id"] = str(product["_id"])
-
-        # build full image URL
         if product.get("image"):
             product["image"] = f"{base_url}/images/{product['image']}"
 
     return products
 
 # ---------------- MODELS ----------------
-
 class CartItem(BaseModel):
     product_id: str
     name: str
@@ -106,7 +87,6 @@ class Order(BaseModel):
     total_amount: int
 
 # ---------------- CART ----------------
-
 @app.post("/cart/save")
 def save_cart(cart: Cart):
     db.carts.update_one(
@@ -124,7 +104,6 @@ def get_cart(user_id: str):
     ) or {"user_id": user_id, "items": []}
 
 # ---------------- ORDERS ----------------
-
 @app.post("/orders/place")
 def place_order(order: Order):
     db.orders.insert_one({
@@ -135,7 +114,6 @@ def place_order(order: Order):
         "created_at": datetime.utcnow().isoformat()
     })
 
-    # clear cart after order
     db.carts.delete_one({"user_id": order.user_id})
 
     return {"success": True}
