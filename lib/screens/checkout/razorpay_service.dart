@@ -3,7 +3,7 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 class RazorpayService {
   late Razorpay _razorpay;
 
-  final void Function() onSuccess;
+  final void Function(String paymentId) onSuccess;
   final void Function(String error) onError;
 
   RazorpayService({
@@ -11,34 +11,57 @@ class RazorpayService {
     required this.onError,
   }) {
     _razorpay = Razorpay();
+
+    // SUCCESS
     _razorpay.on(
-        Razorpay.EVENT_PAYMENT_SUCCESS, (_) => onSuccess());
+      Razorpay.EVENT_PAYMENT_SUCCESS,
+      (PaymentSuccessResponse response) {
+        onSuccess(response.paymentId ?? '');
+      },
+    );
+
+    // ERROR
     _razorpay.on(
-        Razorpay.EVENT_PAYMENT_ERROR,
-        (res) => onError(res.message ?? "Payment failed"));
+      Razorpay.EVENT_PAYMENT_ERROR,
+      (PaymentFailureResponse response) {
+        onError(response.message ?? 'Payment failed');
+      },
+    );
+
+    // WALLET (optional)
+    _razorpay.on(
+      Razorpay.EVENT_EXTERNAL_WALLET,
+      (ExternalWalletResponse response) {},
+    );
   }
 
+  /// Open Razorpay checkout
   void openCheckout({
-    required int amount,
-    required String orderId,
+    required int amount, // in rupees
     required String name,
   }) {
+    if (amount <= 0) {
+      onError('Invalid amount');
+      return;
+    }
+
     final options = {
-      'key': 'RAZORPAY_KEY_HERE', // 🔥 PUT YOUR KEY
-      'amount': amount * 100, // paise
-      'name': name,
-      'order_id': orderId,
+      'key': 'rzp_test_xxxxxxxxxx', // 🔥 PUT YOUR TEST KEY HERE
+      'amount': amount * 100, // convert to paise
       'currency': 'INR',
+      'name': name,
       'description': 'Order Payment',
-      'prefill': {
-        'contact': '9999999999',
-        'email': 'demo@email.com',
+      'timeout': 180,
+      'retry': {
+        'enabled': true,
+        'max_count': 1,
       },
     };
 
     _razorpay.open(options);
   }
 
+  /// Dispose when screen is closed
   void dispose() {
     _razorpay.clear();
   }

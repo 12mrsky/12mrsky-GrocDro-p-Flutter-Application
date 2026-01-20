@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import '../providers/cart_provider.dart';
 
 class ApiService {
-  // ✅ Local / network backend
-  static const String baseUrl = "http://127.0.0.1:8000";
+static const String baseUrl =
+    "http://192.168.201.46:8000";
 
   // ================= PRODUCTS =================
   static Future<List<Map<String, dynamic>>> fetchProducts() async {

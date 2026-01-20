@@ -21,9 +21,10 @@ class _HomeTabState extends State<HomeTab> {
   String selectedCategory = "All";
   String searchQuery = "";
 
+  // ✅ FIXED ICONS (NO LOGIC CHANGE)
   final List<Map<String, dynamic>> categories = [
     {"name": "All", "icon": Icons.grid_view},
-    {"name": "Fruits", "icon": Icons.apple},
+    {"name": "Fruits", "icon": Icons.local_grocery_store}, // ✅ FIX
     {"name": "Vegetables", "icon": Icons.eco},
     {"name": "Snacks", "icon": Icons.fastfood},
     {"name": "Beverages", "icon": Icons.local_drink},
@@ -38,6 +39,7 @@ class _HomeTabState extends State<HomeTab> {
 
   Future<void> _loadProducts() async {
     setState(() => isLoading = true);
+
     final data = await ApiService.fetchProducts();
     if (!mounted) return;
 
@@ -76,7 +78,7 @@ class _HomeTabState extends State<HomeTab> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
 
-      /// 🛒 STICKY CART BAR (SYNCED)
+      /// 🛒 STICKY CART BAR
       bottomNavigationBar: cart.totalItems == 0
           ? null
           : InkWell(
@@ -120,7 +122,7 @@ class _HomeTabState extends State<HomeTab> {
 
       body: Column(
         children: [
-          /// 🔰 HEADER + SEARCH (ANIMATION + DISABLE + SHAKE)
+          /// 🔰 HEADER + SEARCH
           Container(
             padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
             decoration: const BoxDecoration(
@@ -141,72 +143,40 @@ class _HomeTabState extends State<HomeTab> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    /// 🛒 CART ICON (BOUNCE + SHAKE + DISABLE)
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) {
-                        final shake =
-                            Tween<double>(begin: 0, end: 1).animate(animation);
-                        return AnimatedBuilder(
-                          animation: shake,
-                          child: child,
-                          builder: (context, child) {
-                            final offset =
-                                cart.lastAction == CartAction.maxReached
-                                    ? 6 * (1 - shake.value)
-                                    : 0;
-                            return Transform.translate(
-                            offset: Offset(offset.toDouble(), 0),
-                              child: child,
-                            );
-                          },
-                        );
-                      },
-                      child: InkWell(
-                        key: ValueKey(cart.totalItems),
-                        onTap: cart.totalItems == 0
-                            ? null
-                            : () => Navigator.pushNamed(context, '/cart'),
-                        child: Opacity(
-                          opacity: cart.totalItems == 0 ? 0.4 : 1.0,
-                          child: AnimatedScale(
-                            scale: cart.totalItems > 0 ? 1.0 : 0.9,
-                            duration: const Duration(milliseconds: 200),
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                const Icon(
-                                  Icons.shopping_cart,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                                if (cart.totalItems > 0)
-                                  Positioned(
-                                    right: -4,
-                                    top: -4,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius:
-                                            BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        cart.totalItems.toString(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                    InkWell(
+                      onTap: cart.totalItems == 0
+                          ? null
+                          : () => Navigator.pushNamed(context, '/cart'),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          const Icon(
+                            Icons.shopping_cart,
+                            color: Colors.white,
+                            size: 26,
                           ),
-                        ),
+                          if (cart.totalItems > 0)
+                            Positioned(
+                              right: -4,
+                              top: -4,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  cart.totalItems.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
@@ -234,9 +204,9 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
 
-          /// 🟢 CATEGORY ICONS
+          /// 🟢 CATEGORY LIST
           SizedBox(
-            height: 80,
+            height: 90,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -317,8 +287,7 @@ class _HomeTabState extends State<HomeTab> {
   Widget _skeleton() {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 12,
@@ -334,3 +303,4 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 }
+                          

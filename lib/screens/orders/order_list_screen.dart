@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../core/app_colors.dart';
 import '../../domain/providers/order_provider.dart';
 import 'order_details_screen.dart';
@@ -25,6 +26,18 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<OrderProvider>();
 
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "My Orders",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: _buildBody(provider),
+    );
+  }
+
+  Widget _buildBody(OrderProvider provider) {
     if (provider.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),

@@ -5,6 +5,15 @@ import 'screens/splash_screen.dart';
 import '../auth/auth_gate.dart';
 import '../domain/providers/cart_provider.dart';
 
+// 🔹 IMPORT SCREENS FOR ROUTES
+import 'screens/orders/order_list_screen.dart';
+import 'screens/dashboard/address_screen.dart';
+import 'screens/checkout/payments_screen.dart';
+import 'screens/dashboard/notifications_screen.dart';
+import 'screens/dashboard/privacy_screen.dart';
+import 'screens/dashboard/help_screen.dart';
+import 'screens/dashboard/about_screen.dart';
+
 class AppRoot extends StatefulWidget {
   const AppRoot({super.key});
 
@@ -17,7 +26,7 @@ class _AppRootState extends State<AppRoot> {
   static bool _splashShownOnce = false;
 
   bool _showSplash = true;
-  bool _cartRestored = false; // 🔥 ADDED (SAFE FLAG)
+  bool _cartRestored = false; // 🔥 SAFE FLAG
 
   @override
   void initState() {
@@ -53,6 +62,22 @@ class _AppRootState extends State<AppRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return _showSplash ? SplashScreen() : const AuthGate();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
+      // 🔹 APP ENTRY
+      home: _showSplash ? SplashScreen() : const AuthGate(),
+
+      // 🔹 GLOBAL ROUTES (PROFILE → SCREENS)
+      routes: {
+        '/orders': (_) => const OrdersListScreen(),
+        '/address': (_) => const AddressScreen(),
+        '/payments': (_) => const PaymentsScreen(),
+        '/notifications': (_) => const NotificationsScreen(),
+        '/privacy': (_) => const PrivacyScreen(),
+        '/help': (_) => const HelpScreen(),
+        '/about': (_) => const AboutScreen(),
+      },
+    );
   }
 }

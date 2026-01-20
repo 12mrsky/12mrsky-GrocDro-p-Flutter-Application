@@ -29,7 +29,7 @@ class ProfileTab extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          /// 👤 PROFILE HEADER (AMAZON STYLE)
+          /// 👤 PROFILE HEADER
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -79,20 +79,29 @@ class ProfileTab extends StatelessWidget {
 
           /// 📦 ORDERS & PAYMENTS
           _SectionCard(
-            children: const [
+            children: [
               _ProfileTile(
                 icon: Icons.shopping_bag_outlined,
                 title: "My Orders",
+                onTap: () {
+                  Navigator.pushNamed(context, '/orders');
+                },
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.location_on_outlined,
                 title: "Saved Addresses",
+                onTap: () {
+                  Navigator.pushNamed(context, '/address');
+                },
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.payment_outlined,
                 title: "Payments & Refunds",
+                onTap: () {
+                  Navigator.pushNamed(context, '/payments');
+                },
               ),
             ],
           ),
@@ -105,22 +114,26 @@ class ProfileTab extends StatelessWidget {
               SwitchListTile(
                 value: isDark,
                 onChanged: (value) {
-                  context
-                      .read<ThemeProvider>()
-                      .toggleTheme(value);
+                  context.read<ThemeProvider>().toggleTheme(value);
                 },
                 secondary: const Icon(Icons.dark_mode_outlined),
                 title: const Text("Dark Mode"),
               ),
               const Divider(height: 1),
-              const _ProfileTile(
+              _ProfileTile(
                 icon: Icons.notifications_none,
                 title: "Notifications",
+                onTap: () {
+                  Navigator.pushNamed(context, '/notifications');
+                },
               ),
-              const _Divider(),
-              const _ProfileTile(
+              _Divider(),
+              _ProfileTile(
                 icon: Icons.security_outlined,
                 title: "Privacy & Security",
+                onTap: () {
+                  Navigator.pushNamed(context, '/privacy');
+                },
               ),
             ],
           ),
@@ -129,15 +142,21 @@ class ProfileTab extends StatelessWidget {
 
           /// ❓ HELP
           _SectionCard(
-            children: const [
+            children: [
               _ProfileTile(
                 icon: Icons.help_outline,
                 title: "Help Center",
+                onTap: () {
+                  Navigator.pushNamed(context, '/help');
+                },
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.info_outline,
                 title: "About GrocDrop",
+                onTap: () {
+                  Navigator.pushNamed(context, '/about');
+                },
               ),
             ],
           ),
@@ -151,15 +170,9 @@ class ProfileTab extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
-
                 if (context.mounted) {
-                  Navigator.of(
-                    context,
-                    rootNavigator: true,
-                  ).pushNamedAndRemoveUntil(
-                    '/',
-                    (route) => false,
-                  );
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamedAndRemoveUntil('/', (route) => false);
                 }
               },
               icon: Icon(Icons.logout, color: primary),
@@ -210,10 +223,12 @@ class _SectionCard extends StatelessWidget {
 class _ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
+  final VoidCallback onTap;
 
   const _ProfileTile({
     required this.icon,
     required this.title,
+    required this.onTap,
   });
 
   @override
@@ -225,7 +240,7 @@ class _ProfileTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {}, // 🔒 UI only (logic unchanged)
+      onTap: onTap,
     );
   }
 }

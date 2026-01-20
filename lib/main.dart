@@ -9,6 +9,7 @@ import 'app_root.dart';
 import 'domain/providers/auth_provider.dart';
 import 'domain/providers/cart_provider.dart';
 import 'domain/providers/order_provider.dart';
+import 'domain/providers/address_provider.dart'; // ✅ ADDED
 
 // Theme
 import 'core/app_colors.dart';
@@ -38,6 +39,7 @@ class GrocDropApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => AddressProvider()), // ✅ ADDED
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, theme, _) {

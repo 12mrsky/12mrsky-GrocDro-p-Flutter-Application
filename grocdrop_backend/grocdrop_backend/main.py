@@ -16,6 +16,9 @@ load_dotenv()
 # ---------------- APP ----------------
 
 app = FastAPI(title="GrocDrop API")
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 app.add_middleware(
     CORSMiddleware,
