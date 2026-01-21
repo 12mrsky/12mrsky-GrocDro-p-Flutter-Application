@@ -37,7 +37,7 @@ IMAGES_DIR.mkdir(exist_ok=True)
 
 app.mount(
     "/images",
-    StaticFiles(directory=str(IMAGES_DIR)),
+    StaticFiles(directory=BASE_DIR / "images"),
     name="images",
 )
 
