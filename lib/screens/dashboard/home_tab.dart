@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../domain/providers/cart_provider.dart';
 import '../../domain/services/api_service.dart';
-import '../cart/cart_screen.dart';
+import 'cart_screen.dart';
 import 'p_card.dart';
 
 class HomeTab extends StatefulWidget {
