@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from database import order_collection
+from database import orders_collection # type: ignore
 
 router = APIRouter()
 
