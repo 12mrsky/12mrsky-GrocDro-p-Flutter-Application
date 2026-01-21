@@ -6,11 +6,9 @@ class ApiService {
   // 🔁 CHANGE THIS FLAG ONLY
   static const bool isProd = true;
 
-  // 🌐 BASE URL (UPDATED – WORKING RENDER URL)
+  // 🌐 BASE URL
   static const String baseUrl = isProd
-      // ✅ PERMANENT CLOUD (RENDER)
       ? "https://one2mrsky-grocdro-p-flutter-application-x6qh.onrender.com"
-      // 🧪 LOCAL TESTING (PC ON)
       : "http://192.168.201.46:8000";
 
   // ================= PRODUCTS =================
@@ -156,7 +154,7 @@ class ApiService {
     return {"serviceable": false};
   }
 
-  // ================= PAYMENT (RAZORPAY) =================
+  // ================= PAYMENT =================
   static Future<Map<String, dynamic>> createPaymentOrder(
     int amount,
   ) async {

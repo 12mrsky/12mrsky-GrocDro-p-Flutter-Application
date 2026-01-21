@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../core/app_colors.dart';
 import '../../domain/providers/cart_provider.dart';
 import '../../domain/services/api_service.dart';
+import '../cart/cart_screen.dart';
 import 'p_card.dart';
 
 class HomeTab extends StatefulWidget {
@@ -21,10 +23,12 @@ class _HomeTabState extends State<HomeTab> {
   String selectedCategory = "All";
   String searchQuery = "";
 
-  // ✅ FIXED ICONS (NO LOGIC CHANGE)
+  final ScrollController _scrollController = ScrollController();
+  bool _isCollapsed = false;
+
   final List<Map<String, dynamic>> categories = [
     {"name": "All", "icon": Icons.grid_view},
-    {"name": "Fruits", "icon": Icons.local_grocery_store}, // ✅ FIX
+    {"name": "Fruits", "icon": Icons.local_grocery_store},
     {"name": "Vegetables", "icon": Icons.eco},
     {"name": "Snacks", "icon": Icons.fastfood},
     {"name": "Beverages", "icon": Icons.local_drink},
@@ -35,11 +39,18 @@ class _HomeTabState extends State<HomeTab> {
   void initState() {
     super.initState();
     _loadProducts();
+
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 30 && !_isCollapsed) {
+        setState(() => _isCollapsed = true);
+      } else if (_scrollController.offset <= 30 && _isCollapsed) {
+        setState(() => _isCollapsed = false);
+      }
+    });
   }
 
   Future<void> _loadProducts() async {
     setState(() => isLoading = true);
-
     final data = await ApiService.fetchProducts();
     if (!mounted) return;
 
@@ -54,14 +65,26 @@ class _HomeTabState extends State<HomeTab> {
     filteredProducts = allProducts.where((p) {
       final matchCategory =
           selectedCategory == "All" || p['category'] == selectedCategory;
-
       final matchSearch = p['name']
           .toString()
           .toLowerCase()
           .contains(searchQuery.toLowerCase());
-
       return matchCategory && matchSearch;
     }).toList();
+  }
+
+  void _openCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CartScreen()),
+    );
+  }
+
+  double _responsiveGap(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    if (w > 900) return 20;
+    if (w > 600) return 16;
+    return 12;
   }
 
   @override
@@ -78,11 +101,11 @@ class _HomeTabState extends State<HomeTab> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
 
-      /// 🛒 STICKY CART BAR
+      /// 🛒 STICKY VIEW CART BAR
       bottomNavigationBar: cart.totalItems == 0
           ? null
           : InkWell(
-              onTap: () => Navigator.pushNamed(context, '/cart'),
+              onTap: _openCart,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -90,9 +113,9 @@ class _HomeTabState extends State<HomeTab> {
                   color: AppColors.primary,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 6,
-                      offset: const Offset(0, -2),
+                      color: Colors.black.withOpacity(0.25),
+                      blurRadius: 10,
+                      offset: const Offset(0, -3),
                     ),
                   ],
                 ),
@@ -104,7 +127,6 @@ class _HomeTabState extends State<HomeTab> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
                       ),
                     ),
                     const Text(
@@ -112,7 +134,6 @@ class _HomeTabState extends State<HomeTab> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
                       ),
                     ),
                   ],
@@ -122,13 +143,28 @@ class _HomeTabState extends State<HomeTab> {
 
       body: Column(
         children: [
-          /// 🔰 HEADER + SEARCH
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+          /// 🔰 STICKY + ANIMATED HEADER
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              _isCollapsed ? 32 : 48,
+              16,
+              _isCollapsed ? 10 : 16,
+            ),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
                 colors: [AppColors.primary, Color(0xFF7E57C2)],
               ),
+              boxShadow: _isCollapsed
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ]
+                  : [],
             ),
             child: Column(
               children: [
@@ -144,17 +180,12 @@ class _HomeTabState extends State<HomeTab> {
                       ),
                     ),
                     InkWell(
-                      onTap: cart.totalItems == 0
-                          ? null
-                          : () => Navigator.pushNamed(context, '/cart'),
+                      onTap: cart.totalItems == 0 ? null : _openCart,
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          const Icon(
-                            Icons.shopping_cart,
-                            color: Colors.white,
-                            size: 26,
-                          ),
+                          const Icon(Icons.shopping_cart,
+                              color: Colors.white, size: 26),
                           if (cart.totalItems > 0)
                             Positioned(
                               right: -4,
@@ -182,27 +213,48 @@ class _HomeTabState extends State<HomeTab> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  onChanged: (v) {
-                    setState(() {
-                      searchQuery = v;
-                      _applyFilters();
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Search products",
-                    prefixIcon: const Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                AnimatedOpacity(
+                  opacity: _isCollapsed ? 0.9 : 1,
+                  duration: const Duration(milliseconds: 250),
+                  child: TextField(
+                    onChanged: (v) {
+                      setState(() {
+                        searchQuery = v;
+                        _applyFilters();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Search products",
+                      prefixIcon: const Icon(Icons.search),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
+
+          /// 🌫 DIVIDER WITH SHADOW
+          Container(
+            height: 8,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: _responsiveGap(context)),
 
           /// 🟢 CATEGORY LIST
           SizedBox(
@@ -257,11 +309,12 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
 
-          /// 🧺 PRODUCT GRID
+          /// 🧺 PRODUCTS
           Expanded(
             child: isLoading
                 ? _skeleton()
                 : GridView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(16),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
@@ -303,4 +356,3 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 }
-                          
