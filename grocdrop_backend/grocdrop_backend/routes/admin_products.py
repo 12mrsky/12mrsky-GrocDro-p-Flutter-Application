@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from ..database import product_collection
-from ..models.product_model import Product
+from database import product_collection
+from models.product_model import Product
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
