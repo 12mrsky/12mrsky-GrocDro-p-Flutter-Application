@@ -8,18 +8,17 @@ from typing import List
 from dotenv import load_dotenv
 from pathlib import Path
 import os
-from fastapi import FastAPI
-from grocdrop_backend.routes.admin_products import router as admin_router
 
-app = FastAPI()
-app.include_router(admin_router)
+# -------- ROUTERS --------
+from routes.admin_products import router as admin_router
 
-# ---------------- ENV ----------------
+# -------- ENV --------
 load_dotenv()
 
-# ---------------- APP ----------------
+# -------- APP --------
 app = FastAPI(title="GrocDrop API")
 
+# -------- CORS --------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,44 +27,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------- BASE DIR ----------------
+# -------- ROUTERS --------
+app.include_router(admin_router)
+
+# -------- BASE DIR --------
 BASE_DIR = Path(__file__).resolve().parent
 
-# ---------------- STATIC IMAGES ----------------
+# -------- STATIC IMAGES --------
 IMAGES_DIR = BASE_DIR / "images"
 IMAGES_DIR.mkdir(exist_ok=True)
 
 app.mount(
     "/images",
-    StaticFiles(directory=BASE_DIR / "images"),
+    StaticFiles(directory=IMAGES_DIR),
     name="images",
 )
 
-# ---------------- DATABASE ----------------
+# -------- DATABASE --------
 MONGO_URI = os.getenv("MONGO_URI")
-
 client = MongoClient(MONGO_URI)
 
-# ✅ FIX: correct DATABASE name (NOT user)
 db = client["grocdrop_db"]
 
-# ✅ SAFE INDEX CREATION
+# Safe index creation
 try:
     db.carts.create_index("user_id", unique=True)
     db.orders.create_index("user_id")
 except Exception as e:
     print("Index creation skipped:", e)
 
-# ---------------- ROOT ----------------
+# -------- ROOT --------
 @app.get("/")
 def root():
     return {"message": "GrocDrop backend running 🚀"}
 
-# ---------------- PRODUCTS ----------------
+# -------- PRODUCTS --------
 @app.get("/products")
 def get_products(request: Request):
     products = list(db.products.find())
-
     base_url = str(request.base_url).rstrip("/")
 
     for product in products:
@@ -75,7 +74,7 @@ def get_products(request: Request):
 
     return products
 
-# ---------------- MODELS ----------------
+# -------- MODELS --------
 class CartItem(BaseModel):
     product_id: str
     name: str
@@ -91,7 +90,7 @@ class Order(BaseModel):
     items: List[CartItem]
     total_amount: int
 
-# ---------------- CART ----------------
+# -------- CART --------
 @app.post("/cart/save")
 def save_cart(cart: Cart):
     db.carts.update_one(
@@ -108,7 +107,7 @@ def get_cart(user_id: str):
         {"_id": 0}
     ) or {"user_id": user_id, "items": []}
 
-# ---------------- ORDERS ----------------
+# -------- ORDERS --------
 @app.post("/orders/place")
 def place_order(order: Order):
     db.orders.insert_one({
@@ -120,15 +119,9 @@ def place_order(order: Order):
     })
 
     db.carts.delete_one({"user_id": order.user_id})
-
     return {"success": True}
 
 @app.get("/orders/{user_id}")
 def get_orders(user_id: str):
-    orders = list(
-        db.orders.find({"user_id": user_id}, {"_id": 0})
-    )
-    return {
-        "success": True,
-        "data": orders
-    }
+    orders = list(db.orders.find({"user_id": user_id}, {"_id": 0}))
+    return {"success": True, "data": orders}

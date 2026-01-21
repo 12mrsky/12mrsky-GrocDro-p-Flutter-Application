@@ -1,8 +1,9 @@
 from fastapi import APIRouter
-from grocdrop_backend.database import product_collection
-from grocdrop_backend.models.product_model import Product
+from ..database import product_collection
+from ..models.product_model import Product
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
+
 
 @router.post("/add-product")
 def add_product(product: Product):
