@@ -10,7 +10,6 @@
             <data android:scheme="upi" />
         </intent>
     </queries>
-    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name="${applicationName}"
@@ -28,17 +27,23 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
+            <!-- Flutter V2 embedding -->
+            <meta-data
+                android:name="flutterEmbedding"
+                android:value="2"/>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
+        <!-- Google Maps -->
         <meta-data
-    android:name="com.google.android.geo.API_KEY"
-    android:value="YOUR_GOOGLE_MAPS_API_KEY"
-            android:name="flutterEmbedding"
-            android:value="2"/>
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
+
     </application>
 
 </manifest>
