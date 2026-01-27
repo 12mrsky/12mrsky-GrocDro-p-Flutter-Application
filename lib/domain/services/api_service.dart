@@ -57,8 +57,7 @@ class ApiService {
 
   static Future<Map<String, dynamic>> getCart(String userId) async {
     try {
-      final response =
-          await http.get(Uri.parse("$baseUrl/cart/$userId"));
+      final response = await http.get(Uri.parse("$baseUrl/cart/$userId"));
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
@@ -69,12 +68,9 @@ class ApiService {
   }
 
   // ================= ORDERS =================
-  static Future<List<Map<String, dynamic>>> getOrders(
-    String userId,
-  ) async {
+  static Future<List<Map<String, dynamic>>> getOrders(String userId) async {
     try {
-      final response =
-          await http.get(Uri.parse("$baseUrl/orders/$userId"));
+      final response = await http.get(Uri.parse("$baseUrl/orders/$userId"));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded is Map && decoded['data'] is List) {
@@ -139,9 +135,7 @@ class ApiService {
   }
 
   // ================= PINCODE =================
-  static Future<Map<String, dynamic>> checkPincode(
-    String pincode,
-  ) async {
+  static Future<Map<String, dynamic>> checkPincode(String pincode) async {
     try {
       final response =
           await http.get(Uri.parse("$baseUrl/pincode/$pincode"));
@@ -155,9 +149,7 @@ class ApiService {
   }
 
   // ================= PAYMENT =================
-  static Future<Map<String, dynamic>> createPaymentOrder(
-    int amount,
-  ) async {
+  static Future<Map<String, dynamic>> createPaymentOrder(int amount) async {
     try {
       final response = await http.post(
         Uri.parse("$baseUrl/payment/create-order"),
@@ -188,5 +180,32 @@ class ApiService {
       print("DOWNLOAD INVOICE ERROR: $e");
     }
     return null;
+  }
+
+  // ================= ADMIN =================
+  static Future<bool> addProduct({
+    required String name,
+    required double price,
+    required int quantity,
+    required String category,
+    required String image,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/admin/add-product"),
+        headers: const {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "name": name,
+          "price": price,
+          "quantity": quantity,
+          "category": category,
+          "image": image,
+        }),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("ADD PRODUCT ERROR: $e");
+      return false;
+    }
   }
 }

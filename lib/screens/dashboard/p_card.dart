@@ -1,4 +1,4 @@
-// p_card.dart  ✅ OVERFLOW FIX (STABLE – NO OVERFLOW EVER)
+// p_card.dart  ✅ OVERFLOW FIX + STOCK CONTROL (NO LOGIC CHANGED)
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,9 +20,14 @@ class ProductCard extends StatelessWidget {
 
     final String productId = product['_id'].toString();
 
+    // cart quantity (unchanged)
     final int qty = cart.items.containsKey(productId)
         ? cart.items[productId]!.quantity
         : 0;
+
+    // 🔥 STOCK FROM BACKEND
+    final int stock = product['quantity'] ?? 0;
+    final bool outOfStock = stock <= 0;
 
     return InkWell(
       borderRadius: BorderRadius.circular(16),
@@ -52,14 +57,37 @@ class ProductCard extends StatelessWidget {
           children: [
             SizedBox(
               height: 95,
-              child: Center(
-                child: Image.network(
-  product['image'].toString(),
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.image_not_supported,
-                          size: 40, color: Colors.grey),
-                ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Image.network(
+                      product['image'].toString(),
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.image_not_supported,
+                              size: 40, color: Colors.grey),
+                    ),
+                  ),
+
+                  // 🔴 OUT OF STOCK BADGE
+                  if (outOfStock)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Text(
+                          "OUT",
+                          style: TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
 
@@ -102,9 +130,23 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  qty == 0
-                      ? _addButton(cart, productId)
-                      : _qtyController(cart, productId, qty),
+
+                  // 🔥 BLOCK ADD WHEN OUT OF STOCK
+                  outOfStock
+                      ? const SizedBox(
+                          width: 68,
+                          height: 32,
+                          child: Center(
+                            child: Text(
+                              "N/A",
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey),
+                            ),
+                          ),
+                        )
+                      : qty == 0
+                          ? _addButton(cart, productId)
+                          : _qtyController(cart, productId, qty),
                 ],
               ),
             ),
