@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../domain/providers/order_provider.dart';
 import 'order_details_screen.dart';
+import '../dashboard/app_drawer.dart';
 
 class OrdersListScreen extends StatefulWidget {
   const OrdersListScreen({super.key});
@@ -27,10 +28,17 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
     final provider = context.watch<OrderProvider>();
 
     return Scaffold(
+      drawer: const AppDrawer(currentRoute: '/orders'),
       appBar: AppBar(
         title: const Text(
           "My Orders",
           style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       ),
       body: _buildBody(provider),

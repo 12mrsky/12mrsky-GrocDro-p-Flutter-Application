@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../domain/providers/cart_provider.dart';
 import '../../domain/services/api_service.dart';
-import '../admin/admin_add_product.dart'; // ✅ added
+import '../admin/admin_add_product.dart';
 import 'cart_screen.dart';
 import 'p_card.dart';
+import 'app_drawer.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -81,7 +82,6 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  // ✅ ADMIN (added)
   void _openAdmin() async {
     await Navigator.push(
       context,
@@ -109,6 +109,7 @@ class _HomeTabState extends State<HomeTab> {
             : 2;
 
     return Scaffold(
+      drawer: const AppDrawer(currentRoute: '/'),
       backgroundColor: Colors.grey.shade100,
 
       bottomNavigationBar: cart.totalItems == 0
@@ -170,16 +171,28 @@ class _HomeTabState extends State<HomeTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
-                      onLongPress: _openAdmin, // ✅ admin hook
-                      child: const Text(
-                        "GrocDrop",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Builder(
+                          builder: (context) => IconButton(
+                            icon:
+                                const Icon(Icons.menu, color: Colors.white),
+                            onPressed: () =>
+                                Scaffold.of(context).openDrawer(),
+                          ),
                         ),
-                      ),
+                        GestureDetector(
+                          onLongPress: _openAdmin,
+                          child: const Text(
+                            "GrocDrop",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     InkWell(
                       onTap: cart.totalItems == 0 ? null : _openCart,
@@ -245,7 +258,8 @@ class _HomeTabState extends State<HomeTab> {
                 : GridView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 12,
@@ -269,7 +283,8 @@ class _HomeTabState extends State<HomeTab> {
   Widget _skeleton() {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate:
+          const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 12,

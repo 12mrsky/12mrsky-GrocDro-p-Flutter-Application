@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 
+import '../dashboard/app_drawer.dart';
+
 class MapPickerScreen extends StatefulWidget {
   const MapPickerScreen({super.key});
 
@@ -30,7 +32,16 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Pick Address")),
+      drawer: const AppDrawer(currentRoute: '/map_picker'),
+      appBar: AppBar(
+        title: const Text("Pick Address"),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Expanded(

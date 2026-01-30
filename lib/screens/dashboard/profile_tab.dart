@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/theme_provider.dart';
+import 'app_drawer.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
@@ -18,18 +19,23 @@ class ProfileTab extends StatelessWidget {
     final primary = theme.colorScheme.primary;
 
     return Scaffold(
+      drawer: const AppDrawer(currentRoute: '/profile'),
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'My Account',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
       ),
 
       body: ListView(
         children: [
-
-          /// DMART STYLE HEADER
           Container(
             color: Colors.green,
             padding: const EdgeInsets.all(20),
@@ -56,7 +62,6 @@ class ProfileTab extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          /// PROFILE CARD
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _SectionCard(children: [
@@ -74,7 +79,6 @@ class ProfileTab extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// ORDERS
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _SectionCard(children: [
@@ -100,7 +104,6 @@ class ProfileTab extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// SETTINGS
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _SectionCard(children: [
@@ -129,7 +132,6 @@ class ProfileTab extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// HELP
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _SectionCard(children: [
@@ -149,7 +151,6 @@ class ProfileTab extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          /// LOGOUT
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SizedBox(
@@ -188,9 +189,7 @@ class ProfileTab extends StatelessWidget {
   }
 }
 
-/// =====================
 /// REUSABLE
-/// =====================
 
 class _SectionCard extends StatelessWidget {
   final List<Widget> children;
