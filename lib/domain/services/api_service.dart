@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../providers/cart_provider.dart';
 
@@ -206,6 +207,47 @@ class ApiService {
     } catch (e) {
       print("ADD PRODUCT ERROR: $e");
       return false;
+    }
+  }
+// ================= ADMIN EXTRA =================
+
+static Future<List<Map<String, dynamic>>> adminProducts() async {
+  final res = await http.get(Uri.parse("$baseUrl/admin/products"));
+  return List<Map<String, dynamic>>.from(jsonDecode(res.body));
+}
+
+static Future<void> deleteProduct(String id) async {
+  await http.delete(Uri.parse("$baseUrl/admin/delete-product/$id"));
+}
+
+static Future<void> updateProduct(String id, Map<String, dynamic> data) async {
+  await http.put(
+    Uri.parse("$baseUrl/admin/update-product/$id"),
+    headers: const {"Content-Type": "application/json"},
+    body: jsonEncode(data),
+  );
+}
+
+static Future<void> toggleStock(String id) async {
+  await http.patch(Uri.parse("$baseUrl/admin/toggle-stock/$id"));
+}
+  // ================= IMAGE UPLOAD (NEW – SAFE ADD) =================
+  static Future<String?> uploadImage(File file) async {
+    try {
+      final request =
+          http.MultipartRequest("POST", Uri.parse("$baseUrl/upload"));
+
+      request.files.add(await http.MultipartFile.fromPath("file", file.path));
+
+      final response = await request.send();
+
+      final body = await response.stream.bytesToString();
+      final data = jsonDecode(body);
+
+      return data['url'];
+    } catch (e) {
+      print("UPLOAD IMAGE ERROR: $e");
+      return null;
     }
   }
 }
