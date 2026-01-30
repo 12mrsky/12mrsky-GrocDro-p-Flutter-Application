@@ -1,6 +1,5 @@
 // cart_screen.dart
-// ✅ ADD REMOVE BUTTON PER ITEM
-// ❌ No existing logic changed
+// ✅ REMOVE BUTTON FIXED (NO OTHER LOGIC CHANGED)
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -139,13 +138,10 @@ class CartScreen extends StatelessWidget {
                                   ),
                                   const Spacer(),
 
-                                  /// ❌ REMOVE BUTTON
+                                  /// ❌ REMOVE BUTTON (FIXED)
                                   OutlinedButton(
                                     onPressed: () {
-                                      while (cart.items
-                                          .containsKey(item.id)) {
-                                        cart.decreaseQty(item.id);
-                                      }
+                                      cart.decreaseQty(item.id);
                                     },
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.red,
@@ -197,15 +193,14 @@ class CartScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
-                     onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const CheckoutScreen(),
-    ),
-  );
-},
-
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CheckoutScreen(),
+                          ),
+                        );
+                      },
                       child: const Text("Place Order"),
                     ),
                   ),

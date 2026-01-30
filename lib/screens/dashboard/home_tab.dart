@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../../domain/providers/cart_provider.dart';
 import '../../domain/services/api_service.dart';
+import '../admin/admin_add_product.dart'; // ✅ added
 import 'cart_screen.dart';
 import 'p_card.dart';
 
@@ -80,6 +81,15 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
+  // ✅ ADMIN (added)
+  void _openAdmin() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AdminAddProductScreen()),
+    );
+    _loadProducts();
+  }
+
   double _responsiveGap(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     if (w > 900) return 20;
@@ -101,7 +111,6 @@ class _HomeTabState extends State<HomeTab> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
 
-      /// 🛒 STICKY VIEW CART BAR
       bottomNavigationBar: cart.totalItems == 0
           ? null
           : InkWell(
@@ -143,7 +152,6 @@ class _HomeTabState extends State<HomeTab> {
 
       body: Column(
         children: [
-          /// 🔰 STICKY + ANIMATED HEADER
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             padding: EdgeInsets.fromLTRB(
@@ -156,27 +164,21 @@ class _HomeTabState extends State<HomeTab> {
               gradient: const LinearGradient(
                 colors: [AppColors.primary, Color(0xFF7E57C2)],
               ),
-              boxShadow: _isCollapsed
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      )
-                    ]
-                  : [],
             ),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "GrocDrop",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onLongPress: _openAdmin, // ✅ admin hook
+                      child: const Text(
+                        "GrocDrop",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     InkWell(
@@ -213,42 +215,23 @@ class _HomeTabState extends State<HomeTab> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                AnimatedOpacity(
-                  opacity: _isCollapsed ? 0.9 : 1,
-                  duration: const Duration(milliseconds: 250),
-                  child: TextField(
-                    onChanged: (v) {
-                      setState(() {
-                        searchQuery = v;
-                        _applyFilters();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Search products",
-                      prefixIcon: const Icon(Icons.search),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
+                TextField(
+                  onChanged: (v) {
+                    setState(() {
+                      searchQuery = v;
+                      _applyFilters();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Search products",
+                    prefixIcon: const Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          /// 🌫 DIVIDER WITH SHADOW
-          Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -256,60 +239,6 @@ class _HomeTabState extends State<HomeTab> {
 
           SizedBox(height: _responsiveGap(context)),
 
-          /// 🟢 CATEGORY LIST
-          SizedBox(
-            height: 90,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final cat = categories[index];
-                final isSelected = cat['name'] == selectedCategory;
-
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedCategory = cat['name'];
-                      _applyFilters();
-                    });
-                  },
-                  child: Container(
-                    width: 70,
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 26,
-                          backgroundColor:
-                              isSelected ? AppColors.primary : Colors.white,
-                          child: Icon(
-                            cat['icon'],
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          cat['name'],
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? AppColors.primary
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          /// 🧺 PRODUCTS
           Expanded(
             child: isLoading
                 ? _skeleton()

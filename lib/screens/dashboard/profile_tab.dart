@@ -24,93 +24,86 @@ class ProfileTab extends StatelessWidget {
           'My Account',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        centerTitle: false,
       ),
+
       body: ListView(
-        padding: const EdgeInsets.all(16),
         children: [
-          /// 👤 PROFILE HEADER
+
+          /// DMART STYLE HEADER
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.cardColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 32,
-                  backgroundColor: AppColors.accent,
-                  child: const Icon(
-                    Icons.person,
-                    size: 34,
-                    color: Colors.black,
+            color: Colors.green,
+            padding: const EdgeInsets.all(20),
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Hi, ${user?.displayName ?? "Guest"}",
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user?.displayName ?? 'GrocDrop User',
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        user?.email ?? '',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textGrey,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 6),
+                  const Text(
+                    "Raipur, Chhattisgarh",
+                    style: TextStyle(color: Colors.white70),
                   ),
-                ),
-                const Icon(Icons.arrow_forward_ios, size: 16),
-              ],
+                ],
+              ),
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
 
-          /// 📦 ORDERS & PAYMENTS
-          _SectionCard(
-            children: [
+          /// PROFILE CARD
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SectionCard(children: [
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: AppColors.accent,
+                  child: Icon(Icons.person, color: Colors.black),
+                ),
+                title: Text(user?.displayName ?? "GrocDrop User"),
+                subtitle: Text(user?.email ?? ""),
+                trailing: Icon(Icons.arrow_forward_ios, size: 16),
+              ),
+            ]),
+          ),
+
+          const SizedBox(height: 16),
+
+          /// ORDERS
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SectionCard(children: [
               _ProfileTile(
                 icon: Icons.shopping_bag_outlined,
                 title: "My Orders",
-                onTap: () {
-                  Navigator.pushNamed(context, '/orders');
-                },
+                onTap: () => Navigator.pushNamed(context, '/orders'),
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.location_on_outlined,
                 title: "Saved Addresses",
-                onTap: () {
-                  Navigator.pushNamed(context, '/address');
-                },
+                onTap: () => Navigator.pushNamed(context, '/address'),
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.payment_outlined,
                 title: "Payments & Refunds",
-                onTap: () {
-                  Navigator.pushNamed(context, '/payments');
-                },
+                onTap: () => Navigator.pushNamed(context, '/payments'),
               ),
-            ],
+            ]),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          /// ⚙️ SETTINGS
-          _SectionCard(
-            children: [
+          /// SETTINGS
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SectionCard(children: [
               SwitchListTile(
                 value: isDark,
                 onChanged: (value) {
@@ -123,75 +116,72 @@ class ProfileTab extends StatelessWidget {
               _ProfileTile(
                 icon: Icons.notifications_none,
                 title: "Notifications",
-                onTap: () {
-                  Navigator.pushNamed(context, '/notifications');
-                },
+                onTap: () => Navigator.pushNamed(context, '/notifications'),
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.security_outlined,
                 title: "Privacy & Security",
-                onTap: () {
-                  Navigator.pushNamed(context, '/privacy');
-                },
+                onTap: () => Navigator.pushNamed(context, '/privacy'),
               ),
-            ],
+            ]),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          /// ❓ HELP
-          _SectionCard(
-            children: [
+          /// HELP
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SectionCard(children: [
               _ProfileTile(
                 icon: Icons.help_outline,
                 title: "Help Center",
-                onTap: () {
-                  Navigator.pushNamed(context, '/help');
-                },
+                onTap: () => Navigator.pushNamed(context, '/help'),
               ),
               _Divider(),
               _ProfileTile(
                 icon: Icons.info_outline,
                 title: "About GrocDrop",
-                onTap: () {
-                  Navigator.pushNamed(context, '/about');
-                },
+                onTap: () => Navigator.pushNamed(context, '/about'),
               ),
-            ],
+            ]),
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
 
-          /// 🚪 LOGOUT
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: OutlinedButton.icon(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true)
-                      .pushNamedAndRemoveUntil('/', (route) => false);
-                }
-              },
-              icon: Icon(Icons.logout, color: primary),
-              label: Text(
-                'Logout',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: primary,
+          /// LOGOUT
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              height: 52,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (context.mounted) {
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil('/', (route) => false);
+                  }
+                },
+                icon: Icon(Icons.logout, color: primary),
+                label: Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: primary,
+                  ),
                 ),
-              ),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: primary, width: 1.5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: primary, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
             ),
           ),
+
+          const SizedBox(height: 30),
         ],
       ),
     );
@@ -199,7 +189,7 @@ class ProfileTab extends StatelessWidget {
 }
 
 /// =====================
-/// 🔹 REUSABLE WIDGETS
+/// REUSABLE
 /// =====================
 
 class _SectionCard extends StatelessWidget {
@@ -235,10 +225,7 @@ class _ProfileTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w500),
-      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
     );
