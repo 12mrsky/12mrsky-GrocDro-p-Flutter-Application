@@ -9,8 +9,11 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
+from database import db
+
 # -------- ROUTERS --------
 from routes.admin_products import router as admin_router
+from routes.admin_categories import router as category_router   # ✅ already imported
 
 # -------- ENV --------
 load_dotenv()
@@ -29,6 +32,7 @@ app.add_middleware(
 
 # -------- ROUTERS --------
 app.include_router(admin_router)
+app.include_router(category_router)   # ✅ THIS WAS MISSING
 
 # -------- BASE DIR --------
 BASE_DIR = Path(__file__).resolve().parent

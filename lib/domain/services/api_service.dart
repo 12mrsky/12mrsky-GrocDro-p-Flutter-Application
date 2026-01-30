@@ -231,6 +231,24 @@ static Future<void> updateProduct(String id, Map<String, dynamic> data) async {
 static Future<void> toggleStock(String id) async {
   await http.patch(Uri.parse("$baseUrl/admin/toggle-stock/$id"));
 }
+// ================= CATEGORIES =================
+
+static Future<List> adminCategories() async {
+  final r = await http.get(Uri.parse("$baseUrl/admin/categories"));
+  return jsonDecode(r.body);
+}
+
+static Future<void> addCategory(String name) async {
+  await http.post(
+    Uri.parse("$baseUrl/admin/category"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({"name": name}),
+  );
+}
+
+static Future<void> deleteCategory(String id) async {
+  await http.delete(Uri.parse("$baseUrl/admin/category/$id"));
+}
   // ================= IMAGE UPLOAD (NEW – SAFE ADD) =================
   static Future<String?> uploadImage(File file) async {
     try {
