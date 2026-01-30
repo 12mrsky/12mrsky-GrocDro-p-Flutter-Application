@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../domain/services/api_service.dart';
+import 'admin_categories_screen.dart';
 
 class AdminAddProductScreen extends StatefulWidget {
   final Map<String, dynamic>? product; // null = add, not null = edit
@@ -24,17 +25,12 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
 
   bool loading = false;
 
-  final categories = [
-    "Fruits",
-    "Vegetables",
-    "Snacks",
-    "Beverages",
-    "Bakery",
-  ];
+  List<String> categories = [];
 
   @override
   void initState() {
     super.initState();
+    loadCategories();
 
     /// EDIT MODE PREFILL
     if (widget.product != null) {
@@ -44,6 +40,18 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
       category = widget.product!['category'];
       imageUrl = widget.product!['image'];
     }
+  }
+
+  Future<void> loadCategories() async {
+    final data = await ApiService.getCategories();
+
+    setState(() {
+      categories = data.map<String>((e) => e['name'] as String).toList();
+
+      if (!categories.contains(category) && categories.isNotEmpty) {
+        category = categories.first;
+      }
+    });
   }
 
   Future<void> pickImage() async {
@@ -128,7 +136,24 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
     final isEdit = widget.product != null;
 
     return Scaffold(
-      appBar: AppBar(title: Text(isEdit ? "Edit Product" : "Add Product")),
+      appBar: AppBar(
+        title: Text(isEdit ? "Edit Product" : "Add Product"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.category),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AdminCategoriesScreen(),
+                ),
+              );
+
+              loadCategories();
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -158,7 +183,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
             field("Quantity", qty, type: TextInputType.number),
 
             DropdownButtonFormField(
-              value: category,
+              value: categories.isEmpty ? null : category,
               items: categories
                   .map((e) =>
                       DropdownMenuItem(value: e, child: Text(e)))
