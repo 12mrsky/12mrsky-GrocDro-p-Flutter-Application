@@ -209,47 +209,53 @@ class ApiService {
       return false;
     }
   }
-// ================= ADMIN EXTRA =================
 
-static Future<List<Map<String, dynamic>>> adminProducts() async {
-  final res = await http.get(Uri.parse("$baseUrl/admin/products"));
-  return List<Map<String, dynamic>>.from(jsonDecode(res.body));
-}
+  // ================= ADMIN EXTRA =================
+  static Future<List<Map<String, dynamic>>> adminProducts() async {
+    final res = await http.get(Uri.parse("$baseUrl/admin/products"));
+    return List<Map<String, dynamic>>.from(jsonDecode(res.body));
+  }
 
-static Future<void> deleteProduct(String id) async {
-  await http.delete(Uri.parse("$baseUrl/admin/delete-product/$id"));
-}
+  static Future<void> deleteProduct(String id) async {
+    await http.delete(Uri.parse("$baseUrl/admin/delete-product/$id"));
+  }
 
-static Future<void> updateProduct(String id, Map<String, dynamic> data) async {
-  await http.put(
-    Uri.parse("$baseUrl/admin/update-product/$id"),
-    headers: const {"Content-Type": "application/json"},
-    body: jsonEncode(data),
-  );
-}
+  static Future<void> updateProduct(String id, Map<String, dynamic> data) async {
+    await http.put(
+      Uri.parse("$baseUrl/admin/update-product/$id"),
+      headers: const {"Content-Type": "application/json"},
+      body: jsonEncode(data),
+    );
+  }
 
-static Future<void> toggleStock(String id) async {
-  await http.patch(Uri.parse("$baseUrl/admin/toggle-stock/$id"));
-}
-// ================= CATEGORIES =================
+  static Future<void> toggleStock(String id) async {
+    await http.patch(Uri.parse("$baseUrl/admin/toggle-stock/$id"));
+  }
 
-static Future<List> adminCategories() async {
-  final r = await http.get(Uri.parse("$baseUrl/admin/categories"));
-  return jsonDecode(r.body);
-}
+  // ================= CATEGORIES =================
+  static Future<List> adminCategories() async {
+    final r = await http.get(Uri.parse("$baseUrl/admin/categories"));
+    return jsonDecode(r.body);
+  }
 
-static Future<void> addCategory(String name) async {
-  await http.post(
-    Uri.parse("$baseUrl/admin/category"),
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({"name": name}),
-  );
-}
+  // ⭐ Alias for UI
+  static Future<List> getCategories() async {
+    return await adminCategories();
+  }
 
-static Future<void> deleteCategory(String id) async {
-  await http.delete(Uri.parse("$baseUrl/admin/category/$id"));
-}
-  // ================= IMAGE UPLOAD (NEW – SAFE ADD) =================
+  static Future<void> addCategory(String name) async {
+    await http.post(
+      Uri.parse("$baseUrl/admin/category"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"name": name}),
+    );
+  }
+
+  static Future<void> deleteCategory(String id) async {
+    await http.delete(Uri.parse("$baseUrl/admin/category/$id"));
+  }
+
+  // ================= IMAGE UPLOAD =================
   static Future<String?> uploadImage(File file) async {
     try {
       final request =
