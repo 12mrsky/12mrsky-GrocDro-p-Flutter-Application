@@ -15,7 +15,7 @@ class AppDrawer extends StatelessWidget {
         children: [
           /// HEADER WITH USER + ADDRESS
           Container(
-            color: Colors.green,
+             backgroundColor: theme.cardColor,
             padding: const EdgeInsets.all(16),
             child: SafeArea(
               child: Column(
